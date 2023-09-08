@@ -7,6 +7,9 @@ import com.jvolima.rinhabackend.services.exceptions.InvalidFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 public class PessoaService {
 
@@ -32,6 +35,13 @@ public class PessoaService {
 
         if (dto.getNascimento() == null) {
             throw new InvalidFieldException("Nascimento: campo obrigatório");
+        }
+
+        Pattern pattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
+        Matcher matcher = pattern.matcher(dto.getNascimento());
+
+        if  (!matcher.matches()) {
+            throw new InvalidFieldException("Nascimento: formato inválido, use o formato AAAA-MM-DD");
         }
 
         Pessoa entity = new Pessoa();
