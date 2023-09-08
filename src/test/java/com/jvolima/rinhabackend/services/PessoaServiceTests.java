@@ -75,4 +75,12 @@ public class PessoaServiceTests {
 
         Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
     }
+
+    @Test
+    public void insertShouldThrowInvalidFieldExceptionWhenNascimentoIsOutOfDesiredFormat() {
+        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
+        dto.setNascimento("formato inválido");
+
+        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
+    }
 }
