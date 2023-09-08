@@ -3,6 +3,7 @@ package com.jvolima.rinhabackend.services;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.entities.Pessoa;
 import com.jvolima.rinhabackend.repositories.PessoaRepository;
+import com.jvolima.rinhabackend.services.exceptions.InvalidFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,10 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     public PessoaDTO insert(PessoaDTO dto) {
+        if (dto.getApelido() == null) {
+            throw new InvalidFieldException("Apelido: campo obrigatório");
+        }
+
         Pessoa entity = new Pessoa();
         entity.setApelido(dto.getApelido());
         entity.setNome(dto.getNome());
