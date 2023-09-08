@@ -25,7 +25,7 @@ public class Pessoa {
     private String nascimento;
 
     @ElementCollection
-    private Set<String> stack = new HashSet<>();
+    private final Set<String> stack = new HashSet<>();
 
     public Pessoa() {
     }
