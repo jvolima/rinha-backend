@@ -26,6 +26,10 @@ public class PessoaService {
             throw new InvalidFieldException("Nome: campo obrigatório");
         }
 
+        if (dto.getNome().length() > 100) {
+            throw new InvalidFieldException("Nome: máximo de 100 caracteres");
+        }
+
         Pessoa entity = new Pessoa();
         entity.setApelido(dto.getApelido());
         entity.setNome(dto.getNome());
