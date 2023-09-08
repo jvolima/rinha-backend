@@ -59,4 +59,12 @@ public class PessoaServiceTests {
 
         Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
     }
+
+    @Test
+    public void insertShouldThrowInvalidFieldExceptionWhenNomeHasMoreThan100Characters() {
+        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
+        dto.setNome("meuNomeÉMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoGrande");
+
+        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
+    }
 }
