@@ -31,6 +31,12 @@ public class PessoaService {
             throw new UnprocessableEntityException("Data de nascimento inválida");
         }
 
+        Pessoa entityAlreadyExist = pessoaRepository.findByApelido(dto.getApelido());
+
+        if (entityAlreadyExist != null) {
+            throw new UnprocessableEntityException("Apelido já existe");
+        }
+
         Pessoa entity = new Pessoa();
         entity.setApelido(dto.getApelido());
         entity.setNome(dto.getNome());
