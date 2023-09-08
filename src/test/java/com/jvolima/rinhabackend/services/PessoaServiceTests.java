@@ -43,4 +43,12 @@ public class PessoaServiceTests {
 
         Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
     }
+
+    @Test
+    public void insertShouldThrowInvalidFieldExceptionWhenApelidoHasMoreThan32Characters() {
+        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
+        dto.setApelido("meuApelidoÉMuitoMuitoMuitoMuitoMuitoMuitoGrande");
+
+        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
+    }
 }
