@@ -67,4 +67,12 @@ public class PessoaServiceTests {
 
         Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
     }
+
+    @Test
+    public void insertShouldThrowInvalidFieldExceptionWhenNascimentoIsNull() {
+        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
+        dto.setNascimento(null);
+
+        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
+    }
 }
