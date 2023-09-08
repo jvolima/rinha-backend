@@ -3,12 +3,14 @@ package com.jvolima.rinhabackend.services;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.entities.Pessoa;
 import com.jvolima.rinhabackend.repositories.PessoaRepository;
-import com.jvolima.rinhabackend.services.exceptions.InvalidFieldException;
+import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Service
 public class PessoaService {
@@ -17,31 +19,16 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     public PessoaDTO insert(PessoaDTO dto) {
-        if (dto.getApelido() == null) {
-            throw new InvalidFieldException("Apelido: campo obrigatório");
-        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate parsedDate = LocalDate.parse(dto.getNascimento(), formatter);
+            LocalDate parsedNowDate = LocalDate.now();
 
-        if (dto.getApelido().length() > 32) {
-            throw new InvalidFieldException("Apelido: máximo de 32 caracteres");
-        }
-
-        if (dto.getNome() == null) {
-            throw new InvalidFieldException("Nome: campo obrigatório");
-        }
-
-        if (dto.getNome().length() > 100) {
-            throw new InvalidFieldException("Nome: máximo de 100 caracteres");
-        }
-
-        if (dto.getNascimento() == null) {
-            throw new InvalidFieldException("Nascimento: campo obrigatório");
-        }
-
-        Pattern pattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
-        Matcher matcher = pattern.matcher(dto.getNascimento());
-
-        if  (!matcher.matches()) {
-            throw new InvalidFieldException("Nascimento: formato inválido, use o formato AAAA-MM-DD");
+            if (parsedDate.isAfter(parsedNowDate)) {
+                throw new UnprocessableEntityException("Data de nascimento inválida");
+            }
+        } catch (DateTimeParseException e) {
+            throw new UnprocessableEntityException("Data de nascimento inválida");
         }
 
         Pessoa entity = new Pessoa();

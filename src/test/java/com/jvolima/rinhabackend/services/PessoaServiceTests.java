@@ -3,7 +3,7 @@ package com.jvolima.rinhabackend.services;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.entities.Pessoa;
 import com.jvolima.rinhabackend.repositories.PessoaRepository;
-import com.jvolima.rinhabackend.services.exceptions.InvalidFieldException;
+import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import com.jvolima.rinhabackend.tests.Factory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.Instant;
+import java.time.LocalDate;
 
 @ExtendWith(SpringExtension.class)
 public class PessoaServiceTests {
@@ -34,53 +37,5 @@ public class PessoaServiceTests {
         PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
 
         Assertions.assertNotNull(dto);
-    }
-
-    @Test
-    public void insertShouldThrowInvalidFieldExceptionWhenApelidoIsNull() {
-        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
-        dto.setApelido(null);
-
-        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
-    }
-
-    @Test
-    public void insertShouldThrowInvalidFieldExceptionWhenApelidoHasMoreThan32Characters() {
-        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
-        dto.setApelido("meuApelidoÉMuitoMuitoMuitoMuitoMuitoMuitoGrande");
-
-        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
-    }
-
-    @Test
-    public void insertShouldThrowInvalidFieldExceptionWhenNomeIsNull() {
-        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
-        dto.setNome(null);
-
-        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
-    }
-
-    @Test
-    public void insertShouldThrowInvalidFieldExceptionWhenNomeHasMoreThan100Characters() {
-        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
-        dto.setNome("meuNomeÉMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoGrande");
-
-        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
-    }
-
-    @Test
-    public void insertShouldThrowInvalidFieldExceptionWhenNascimentoIsNull() {
-        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
-        dto.setNascimento(null);
-
-        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
-    }
-
-    @Test
-    public void insertShouldThrowInvalidFieldExceptionWhenNascimentoIsOutOfDesiredFormat() {
-        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
-        dto.setNascimento("formato inválido");
-
-        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
     }
 }

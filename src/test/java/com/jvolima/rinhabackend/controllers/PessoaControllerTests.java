@@ -1,7 +1,6 @@
-package com.jvolima.rinhabackend.resources;
+package com.jvolima.rinhabackend.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jvolima.rinhabackend.controllers.PessoaController;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.services.PessoaService;
 import com.jvolima.rinhabackend.tests.Factory;
