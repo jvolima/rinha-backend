@@ -3,6 +3,7 @@ package com.jvolima.rinhabackend.services;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.entities.Pessoa;
 import com.jvolima.rinhabackend.repositories.PessoaRepository;
+import com.jvolima.rinhabackend.services.exceptions.InvalidFieldException;
 import com.jvolima.rinhabackend.tests.Factory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,5 +34,13 @@ public class PessoaServiceTests {
         PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
 
         Assertions.assertNotNull(dto);
+    }
+
+    @Test
+    public void insertShouldThrowInvalidFieldExceptionWhenApelidoIsNull() {
+        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
+        dto.setApelido(null);
+
+        Assertions.assertThrows(InvalidFieldException.class, () -> pessoaService.insert(dto));
     }
 }
