@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 @ExtendWith(SpringExtension.class)
@@ -37,5 +36,32 @@ public class PessoaServiceTests {
         PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
 
         Assertions.assertNotNull(dto);
+    }
+
+    @Test
+    public void insertShouldThrowUnprocessableEntityExceptionWhenNascimentoHasInvalidDay() {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setNascimento("2004-10-34");
+
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> pessoaService.insert(dto));
+    }
+
+    @Test
+    public void insertShouldThrowUnprocessableEntityExceptionWhenNascimentoHasInvalidMonth() {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setNascimento("2004-14-20");
+
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> pessoaService.insert(dto));
+    }
+
+    @Test
+    public void insertShouldThrowUnprocessableEntityExceptionWhenNascimentoIsAfterNow() {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate dateOneYearLater = currentDate.plusYears(1);
+
+        dto.setNascimento(dateOneYearLater.toString());
+
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> pessoaService.insert(dto));
     }
 }
