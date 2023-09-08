@@ -26,8 +26,14 @@ public class PessoaServiceTests {
     @Mock
     private PessoaRepository pessoaRepository;
 
+    private String apelido;
+
     @BeforeEach
     public void setUp() {
+        apelido = "anyApelido";
+
+        Mockito.when(pessoaRepository.findByApelido(apelido)).thenReturn(Factory.createPessoa());
+
         Mockito.when(pessoaRepository.save(ArgumentMatchers.any(Pessoa.class))).thenReturn(Factory.createPessoa());
     }
 
@@ -61,6 +67,14 @@ public class PessoaServiceTests {
         LocalDate dateOneYearLater = currentDate.plusYears(1);
 
         dto.setNascimento(dateOneYearLater.toString());
+
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> pessoaService.insert(dto));
+    }
+
+    @Test
+    public void insertShouldThrowUnprocessableEntityExceptionWhenApelidoAlreadyExist() {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setApelido(apelido);
 
         Assertions.assertThrows(UnprocessableEntityException.class, () -> pessoaService.insert(dto));
     }
