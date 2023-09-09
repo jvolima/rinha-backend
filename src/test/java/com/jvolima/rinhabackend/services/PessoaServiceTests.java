@@ -4,6 +4,7 @@ import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.entities.Pessoa;
 import com.jvolima.rinhabackend.repositories.PessoaRepository;
 import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
+import com.jvolima.rinhabackend.services.exceptions.NotFoundException;
 import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import com.jvolima.rinhabackend.tests.Factory;
 import org.junit.jupiter.api.Assertions;
@@ -31,13 +32,16 @@ public class PessoaServiceTests {
 
     private String apelido;
     private UUID existingId;
+    private UUID nonExistingId;
 
     @BeforeEach
     public void setUp() {
         apelido = "anyApelido";
         existingId = UUID.randomUUID();
+        nonExistingId = UUID.randomUUID();
 
         Mockito.when(pessoaRepository.findById(existingId)).thenReturn(Optional.of(Factory.createPessoa()));
+        Mockito.when(pessoaRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         Mockito.when(pessoaRepository.findByApelido(apelido)).thenReturn(Factory.createPessoa());
 
@@ -53,6 +57,12 @@ public class PessoaServiceTests {
     }
 
     @Test
+    public void findByIdShouldThrowNotFoundExceptionWhenIdDoesNotExists() {
+        Assertions.assertThrows(NotFoundException.class, () -> pessoaService.findById(nonExistingId));
+        Mockito.verify(pessoaRepository).findById(nonExistingId);
+    }
+
+    @Test
     public void insertShouldReturnPessoaDTOWhenDataIsValid() {
         PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
 
@@ -60,7 +70,7 @@ public class PessoaServiceTests {
     }
 
     @Test
-    public void insertShouldThrowBadRequestWhenApelidoHasOnlyNumbers() {
+    public void insertShouldThrowBadRequestExceptionWhenApelidoHasOnlyNumbers() {
         PessoaDTO dto = Factory.createPessoaDTO();
         dto.setApelido("15");
 
@@ -68,7 +78,7 @@ public class PessoaServiceTests {
     }
 
     @Test
-    public void insertShouldThrowBadRequestWhenNomeHasOnlyNumbers() {
+    public void insertShouldThrowBadRequestExceptionWhenNomeHasOnlyNumbers() {
         PessoaDTO dto = Factory.createPessoaDTO();
         dto.setNome("80");
 
