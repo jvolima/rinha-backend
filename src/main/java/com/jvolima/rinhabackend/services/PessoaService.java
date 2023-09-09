@@ -7,10 +7,13 @@ import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
 import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PessoaService {
@@ -18,6 +21,15 @@ public class PessoaService {
     @Autowired
     private PessoaRepository pessoaRepository;
 
+    @Transactional(readOnly = true)
+    public PessoaDTO findById(UUID id) {
+        Optional<Pessoa> optionalEntity = pessoaRepository.findById(id);
+        Pessoa entity = optionalEntity.get();
+
+        return new PessoaDTO(entity);
+    }
+
+    @Transactional
     public PessoaDTO insert(PessoaDTO dto) {
         String stringWithOnlyNumbers = "^[0-9]+$";
 
