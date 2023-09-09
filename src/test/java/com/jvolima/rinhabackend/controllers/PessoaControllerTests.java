@@ -3,6 +3,8 @@ package com.jvolima.rinhabackend.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.services.PessoaService;
+import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
+import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import com.jvolima.rinhabackend.tests.Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,7 @@ public class PessoaControllerTests {
         dto = Factory.createPessoaDTO();
         dto.setId(UUID.randomUUID());
 
-        Mockito.when(service.insert(ArgumentMatchers.any())).thenReturn(dto);
+        Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenReturn(dto);
     }
 
     @Test
@@ -191,4 +193,23 @@ public class PessoaControllerTests {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 32 caracteres"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
+
+    @Test
+    public void insertShouldReturnUnprocessableEntityWhenServiceThrowUnprocessableEntityException() throws Exception {
+        PessoaDTO unprocessableDTO = Factory.createPessoaDTO();
+
+        String jsonBody = objectMapper.writeValueAsString(unprocessableDTO);
+
+        Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenThrow(UnprocessableEntityException.class);
+
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+    }
+
+
 }
