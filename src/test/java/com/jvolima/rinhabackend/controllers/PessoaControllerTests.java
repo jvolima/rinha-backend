@@ -72,6 +72,22 @@ public class PessoaControllerTests {
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
 
+    @Test
+    public void insertShouldReturnUnprocessableEntityWhenApelidoHasMoreThan32Characters() throws Exception {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setApelido("MeuApelidoÉMuitoMuitoMuitoMuitoGrande");
+
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 32 caracteres"));
+        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+    }
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenNomeIsNull() throws Exception {
