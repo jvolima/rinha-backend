@@ -17,6 +17,8 @@ import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 public class PessoaServiceTests {
@@ -28,10 +30,14 @@ public class PessoaServiceTests {
     private PessoaRepository pessoaRepository;
 
     private String apelido;
+    private UUID existingId;
 
     @BeforeEach
     public void setUp() {
         apelido = "anyApelido";
+        existingId = UUID.randomUUID();
+
+        Mockito.when(pessoaRepository.findById(existingId)).thenReturn(Optional.of(Factory.createPessoa()));
 
         Mockito.when(pessoaRepository.findByApelido(apelido)).thenReturn(Factory.createPessoa());
 
@@ -39,7 +45,15 @@ public class PessoaServiceTests {
     }
 
     @Test
-    public void insertShouldReturnPessoaDtoWhenDataIsValid() {
+    public void findByIdShouldReturnPessoaDTOWhenIdExist() {
+        PessoaDTO dto = pessoaService.findById(existingId);
+
+        Assertions.assertNotNull(dto);
+        Mockito.verify(pessoaRepository).findById(existingId);
+    }
+
+    @Test
+    public void insertShouldReturnPessoaDTOWhenDataIsValid() {
         PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
 
         Assertions.assertNotNull(dto);
