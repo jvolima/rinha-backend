@@ -1,6 +1,7 @@
 package com.jvolima.rinhabackend.controllers.exceptions;
 
 import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
+import com.jvolima.rinhabackend.services.exceptions.NotFoundException;
 import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,19 @@ public class ControllerExceptionHandler {
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setError("Bad request exception");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<StandardError> notFound(NotFoundException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        StandardError err = new StandardError();
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Not found exception");
         err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
 
