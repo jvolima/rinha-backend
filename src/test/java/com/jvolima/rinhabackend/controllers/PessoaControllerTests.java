@@ -54,4 +54,20 @@ public class PessoaControllerTests {
         result.andExpect(MockMvcResultMatchers.header().string("Location", "http://localhost/pessoas/" + dto.getId()));
         result.andExpect(MockMvcResultMatchers.status().isCreated());
     }
+
+    @Test
+    public void insertShouldReturnUnprocessableEntityWhenNomeIsNull() throws Exception {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setNome(null);
+
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+    }
 }
