@@ -62,6 +62,14 @@ public class PessoaServiceTests {
     }
 
     @Test
+    public void insertShouldThrowBadRequestWhenSomeStackHasOnlyNumbers() {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.getStack().add("120");
+
+        Assertions.assertThrows(BadRequestException.class, () -> pessoaService.insert(dto));
+    }
+
+    @Test
     public void insertShouldThrowUnprocessableEntityExceptionWhenNascimentoHasInvalidDay() {
         PessoaDTO dto = Factory.createPessoaDTO();
         dto.setNascimento("2004-10-34");
