@@ -156,4 +156,22 @@ public class PessoaControllerTests {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Formato desejado: AAAA-MM-DD (ano, mês, dia)"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
+
+    @Test
+    public void insertShouldReturnUnprocessableEntityWhenSomeStackIsNull() throws Exception {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.getStack().clear();
+        dto.getStack().add(null);
+
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Campo obrigatório"));
+        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+    }
 }
