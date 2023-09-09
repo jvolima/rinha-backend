@@ -53,7 +53,7 @@ public class PessoaControllerTests {
     }
 
     @Test
-    public void findByIdShouldReturnOkAndPessoaDTOWhenIdExist() throws Exception {
+    public void findByIdShouldReturnOkAndPessoaDTOWhenIdExists() throws Exception {
         ResultActions result =
                 mockMvc.perform(MockMvcRequestBuilders.get("/pessoas/{id}", existingId)
                         .accept(MediaType.APPLICATION_JSON));
@@ -63,7 +63,7 @@ public class PessoaControllerTests {
     }
 
     @Test
-    public void findByIdShouldReturnNotFoundWhenIdDoesNotExists() throws Exception {
+    public void findByIdShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
         ResultActions result =
                 mockMvc.perform(MockMvcRequestBuilders.get("/pessoas/{id}", nonExistingId)
                         .accept(MediaType.APPLICATION_JSON));

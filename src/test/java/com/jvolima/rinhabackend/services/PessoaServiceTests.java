@@ -49,7 +49,7 @@ public class PessoaServiceTests {
     }
 
     @Test
-    public void findByIdShouldReturnPessoaDTOWhenIdExist() {
+    public void findByIdShouldReturnPessoaDTOWhenIdExists() {
         PessoaDTO dto = pessoaService.findById(existingId);
 
         Assertions.assertNotNull(dto);
@@ -57,7 +57,7 @@ public class PessoaServiceTests {
     }
 
     @Test
-    public void findByIdShouldThrowNotFoundExceptionWhenIdDoesNotExists() {
+    public void findByIdShouldThrowNotFoundExceptionWhenIdDoesNotExist() {
         Assertions.assertThrows(NotFoundException.class, () -> pessoaService.findById(nonExistingId));
         Mockito.verify(pessoaRepository).findById(nonExistingId);
     }
