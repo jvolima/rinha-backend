@@ -8,7 +8,6 @@ import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -27,6 +26,12 @@ public class PessoaService {
 
         if (matcher.matches()) {
             throw new BadRequestException("Apelido não pode ser do tipo número");
+        }
+
+        matcher = pattern.matcher(dto.getNome());
+
+        if (matcher.matches()) {
+            throw new BadRequestException("Nome não pode ser do tipo número");
         }
 
         try {
