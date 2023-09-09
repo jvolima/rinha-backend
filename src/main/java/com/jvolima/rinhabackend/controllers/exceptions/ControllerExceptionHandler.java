@@ -1,5 +1,6 @@
 package com.jvolima.rinhabackend.controllers.exceptions;
 
+import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
 import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -34,10 +35,23 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UnprocessableEntityException.class)
     public ResponseEntity<StandardError> unprocessableEntity(UnprocessableEntityException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
-        ValidationError err = new ValidationError();
+        StandardError err = new StandardError();
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setError("Unprocessable entity exception");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<StandardError> badRequest(BadRequestException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError();
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Bad request exception");
         err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
 
