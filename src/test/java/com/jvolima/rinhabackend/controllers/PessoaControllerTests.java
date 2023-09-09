@@ -33,14 +33,29 @@ public class PessoaControllerTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private UUID existingId;
     private PessoaDTO dto;
 
     @BeforeEach
     public void setUp() {
+        existingId = UUID.randomUUID();
+
         dto = Factory.createPessoaDTO();
         dto.setId(UUID.randomUUID());
 
+        Mockito.when(service.findById(existingId)).thenReturn(dto);
+
         Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenReturn(dto);
+    }
+
+    @Test
+    public void findByIdShouldReturnOkAndPessoaDTOWhenIdExist() throws Exception {
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.get("/pessoas/{id}", existingId)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
     }
 
     @Test
