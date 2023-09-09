@@ -3,6 +3,7 @@ package com.jvolima.rinhabackend.services;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.entities.Pessoa;
 import com.jvolima.rinhabackend.repositories.PessoaRepository;
+import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
 import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import com.jvolima.rinhabackend.tests.Factory;
 import org.junit.jupiter.api.Assertions;
@@ -42,6 +43,14 @@ public class PessoaServiceTests {
         PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
 
         Assertions.assertNotNull(dto);
+    }
+
+    @Test
+    public void insertShouldThrowBadRequestWhenApelidoHasOnlyNumbers() {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setApelido("15");
+
+        Assertions.assertThrows(BadRequestException.class, () -> pessoaService.insert(dto));
     }
 
     @Test
