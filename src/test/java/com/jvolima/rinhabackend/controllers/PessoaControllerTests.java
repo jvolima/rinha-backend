@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.services.PessoaService;
 import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
+import com.jvolima.rinhabackend.services.exceptions.NotFoundException;
 import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import com.jvolima.rinhabackend.tests.Factory;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,16 +35,19 @@ public class PessoaControllerTests {
     private ObjectMapper objectMapper;
 
     private UUID existingId;
+    private UUID nonExistingId;
     private PessoaDTO dto;
 
     @BeforeEach
     public void setUp() {
         existingId = UUID.randomUUID();
+        nonExistingId = UUID.randomUUID();
 
         dto = Factory.createPessoaDTO();
         dto.setId(UUID.randomUUID());
 
         Mockito.when(service.findById(existingId)).thenReturn(dto);
+        Mockito.when(service.findById(nonExistingId)).thenThrow(NotFoundException.class);
 
         Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenReturn(dto);
     }
@@ -56,6 +60,16 @@ public class PessoaControllerTests {
 
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+    }
+
+    @Test
+    public void findByIdShouldReturnNotFoundWhenIdDoesNotExists() throws Exception {
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.get("/pessoas/{id}", nonExistingId)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
     }
 
     @Test
