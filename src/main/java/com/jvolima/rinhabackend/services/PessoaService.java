@@ -4,6 +4,7 @@ import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.entities.Pessoa;
 import com.jvolima.rinhabackend.repositories.PessoaRepository;
 import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
+import com.jvolima.rinhabackend.services.exceptions.NotFoundException;
 import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class PessoaService {
     @Transactional(readOnly = true)
     public PessoaDTO findById(UUID id) {
         Optional<Pessoa> optionalEntity = pessoaRepository.findById(id);
-        Pessoa entity = optionalEntity.get();
+        Pessoa entity = optionalEntity.orElseThrow(() ->  new NotFoundException("Id " + id + " não existe"));
 
         return new PessoaDTO(entity);
     }
