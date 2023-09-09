@@ -68,6 +68,24 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Campo obrigatório"));
+        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void insertShouldReturnUnprocessableEntityWhenNomeHasMoreThan100Characters() throws Exception {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setNome("MeuNomeÉMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoGrande");
+
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 100 caracteres"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
 }
