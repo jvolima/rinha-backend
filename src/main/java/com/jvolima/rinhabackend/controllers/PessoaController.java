@@ -2,6 +2,7 @@ package com.jvolima.rinhabackend.controllers;
 
 import com.jvolima.rinhabackend.dto.PessoaDTO;
 import com.jvolima.rinhabackend.services.PessoaService;
+import com.jvolima.rinhabackend.services.exceptions.NotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,14 @@ public class PessoaController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<PessoaDTO> findById(@PathVariable UUID id) {
-        PessoaDTO dto = pessoaService.findById(id);
+    public ResponseEntity<PessoaDTO> findById(@PathVariable String id) {
+        try {
+            UUID uuid = UUID.fromString(id);
+            PessoaDTO dto = pessoaService.findById(uuid);
 
-        return ResponseEntity.ok().body(dto);
+            return ResponseEntity.ok().body(dto);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Id " + id + " not found");
+        }
     }
 }
