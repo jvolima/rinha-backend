@@ -21,17 +21,20 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     public PessoaDTO insert(PessoaDTO dto) {
-        Pattern pattern = Pattern.compile("^[0-9]+$");
-        Matcher matcher = pattern.matcher(dto.getApelido());
+        String stringWithOnlyNumbers = "^[0-9]+$";
 
-        if (matcher.matches()) {
+        if (dto.getApelido().matches(stringWithOnlyNumbers)) {
             throw new BadRequestException("Apelido não pode ser do tipo número");
         }
 
-        matcher = pattern.matcher(dto.getNome());
-
-        if (matcher.matches()) {
+        if (dto.getNome().matches(stringWithOnlyNumbers)) {
             throw new BadRequestException("Nome não pode ser do tipo número");
+        }
+
+        for (String stack: dto.getStack()) {
+            if (stack.matches(stringWithOnlyNumbers)) {
+                throw new BadRequestException("Nenhuma stack pode ser do tipo número");
+            }
         }
 
         try {

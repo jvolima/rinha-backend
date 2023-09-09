@@ -7,9 +7,9 @@ public class Factory {
 
     public static Pessoa createPessoa() {
         Pessoa pessoa = new Pessoa();
-        pessoa.setApelido("apelido");
-        pessoa.setNome("nome");
-        pessoa.setNascimento("2004-11-10");
+        pessoa.setApelido("fulano123");
+        pessoa.setNome("fulano da silva");
+        pessoa.setNascimento("2000-10-10");
         pessoa.getStack().add("React");
         pessoa.getStack().add("Spring Boot");
 
