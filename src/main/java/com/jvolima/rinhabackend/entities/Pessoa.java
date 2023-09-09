@@ -24,7 +24,7 @@ public class Pessoa {
     @Column(nullable = false)
     private String nascimento;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private final Set<String> stack = new HashSet<>();
 
     public Pessoa() {
