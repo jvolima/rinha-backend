@@ -122,4 +122,21 @@ public class PessoaControllerTests {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 100 caracteres"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
+
+    @Test
+    public void insertShouldReturnUnprocessableEntityWhenNascimentoIsNull() throws Exception {
+        PessoaDTO dto = Factory.createPessoaDTO();
+        dto.setNascimento(null);
+
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Campo obrigatório"));
+        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+    }
 }
