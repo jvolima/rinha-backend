@@ -13,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +58,8 @@ public class PessoaService {
             throw new BadRequestException("Nome não pode ser do tipo número");
         }
 
-        for (String stack: dto.getStack()) {
+        Set<String> stacks = dto.getStack() != null ? dto.getStack() : new HashSet<>();
+        for (String stack: stacks) {
             if (stack.matches(stringWithOnlyNumbers)) {
                 throw new BadRequestException("Nenhuma stack pode ser do tipo número");
             }
@@ -88,7 +87,7 @@ public class PessoaService {
         entity.setApelido(dto.getApelido());
         entity.setNome(dto.getNome());
         entity.setNascimento(dto.getNascimento());
-        for (String stack : dto.getStack()) {
+        for (String stack : stacks) {
             entity.getStack().add(stack);
         }
 

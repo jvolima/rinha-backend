@@ -81,4 +81,8 @@ public class PessoaDTO {
     public Set<String> getStack() {
         return stack;
     }
+
+    public void setNullForStack() {
+        stack = null;
+    }
 }

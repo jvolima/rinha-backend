@@ -94,9 +94,14 @@ public class PessoaServiceTests {
 
     @Test
     public void insertShouldReturnPessoaDTOWhenDataIsValid() {
-        PessoaDTO dto = pessoaService.insert(Factory.createPessoaDTO());
+        PessoaDTO dto1 = pessoaService.insert(Factory.createPessoaDTO());
+        PessoaDTO dto2 = Factory.createPessoaDTO();
+        dto2.setNullForStack();
+        dto2.setApelido("outroApelido");
+        dto2 = pessoaService.insert(dto2);
 
-        Assertions.assertNotNull(dto);
+        Assertions.assertNotNull(dto1);
+        Assertions.assertNotNull(dto2);
     }
 
     @Test
