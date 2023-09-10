@@ -38,7 +38,7 @@ public class PessoaServiceTests {
 
     @BeforeEach
     public void setUp() {
-        searchTerm = "fula";
+        searchTerm = "fulano";
         apelido = "anyApelido";
         existingId = UUID.randomUUID();
         nonExistingId = UUID.randomUUID();
@@ -55,9 +55,9 @@ public class PessoaServiceTests {
 
     @Test
     public void findAllShouldReturnAListOfPessoaDTOThatHaveTheSearchTerm() {
-        List<PessoaDTO> pessoaDTOList = pessoaService.findAllBySubstring(searchTerm);
+        List<PessoaDTO> list = pessoaService.findAllBySubstring(searchTerm);
 
-        Assertions.assertEquals(2, pessoaDTOList.size());
+        Assertions.assertEquals(2, list.size());
         Mockito.verify(pessoaRepository).findAllBySubstring(searchTerm);
     }
 

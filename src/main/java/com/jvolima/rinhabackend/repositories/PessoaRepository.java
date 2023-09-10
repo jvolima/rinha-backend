@@ -11,12 +11,9 @@ import java.util.UUID;
 @Repository
 public interface PessoaRepository extends JpaRepository<Pessoa, UUID> {
 
-    @Query("SELECT DISTINCT p FROM Pessoa p " +
-            "LEFT JOIN p.stack s " +
-            "WHERE p.apelido LIKE %:termo% " +
-            "OR p.nome LIKE %:termo% " +
-            "OR p.nascimento LIKE %:termo% " +
-            "OR s LIKE %:termo%")
+    @Query("SELECT DISTINCT p FROM Pessoa p LEFT JOIN p.stack s " +
+            "WHERE p.apelido ILIKE %:searchTerm% OR p.nome ILIKE %:searchTerm% " +
+            "OR p.nascimento ILIKE %:searchTerm% OR s ILIKE %:searchTerm%")
     List<Pessoa> findAllBySubstring(String searchTerm);
 
     Pessoa findByApelido(String apelido);

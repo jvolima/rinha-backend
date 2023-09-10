@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,13 +20,11 @@ public class PessoaController {
     @Autowired
     private PessoaService pessoaService;
 
-    @PostMapping
-    public ResponseEntity<Void> insert(@Valid @RequestBody PessoaDTO dto) {
-        dto = pessoaService.insert(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(dto.getId()).toUri();
+   @GetMapping
+    public ResponseEntity<List<PessoaDTO>> findAllBySubstring(@RequestParam String t) {
+        List<PessoaDTO> list = pessoaService.findAllBySubstring(t);
 
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/{id}")
@@ -38,5 +37,14 @@ public class PessoaController {
         } catch (IllegalArgumentException e) {
             throw new NotFoundException("Id " + id + " not found");
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> insert(@Valid @RequestBody PessoaDTO dto) {
+        dto = pessoaService.insert(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(dto.getId()).toUri();
+
+        return ResponseEntity.created(uri).build();
     }
 }
