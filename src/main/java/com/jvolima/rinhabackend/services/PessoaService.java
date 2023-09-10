@@ -13,14 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PessoaService {
 
     @Autowired
     private PessoaRepository pessoaRepository;
+
+    @Transactional(readOnly = true)
+    public List<PessoaDTO> findAllBySubstring(String searchTerm) {
+        List<Pessoa> list = pessoaRepository.findAllBySubstring(searchTerm);
+
+        return list.stream().map(PessoaDTO::new).collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public PessoaDTO findById(UUID id) {
