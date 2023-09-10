@@ -31,6 +31,7 @@ public class PessoaServiceTests {
     @Mock
     private PessoaRepository pessoaRepository;
 
+    private Long totalPessoa;
     private String searchTerm;
     private String apelido;
     private UUID existingId;
@@ -38,10 +39,13 @@ public class PessoaServiceTests {
 
     @BeforeEach
     public void setUp() {
+        totalPessoa = 5L;
         searchTerm = "fulano";
         apelido = "anyApelido";
         existingId = UUID.randomUUID();
         nonExistingId = UUID.randomUUID();
+
+        Mockito.when(pessoaRepository.count()).thenReturn(totalPessoa);
 
         Mockito.when(pessoaRepository.findAllBySubstring(searchTerm)).thenReturn(Factory.createPessoaList());
 
@@ -54,10 +58,18 @@ public class PessoaServiceTests {
     }
 
     @Test
+    public void countShouldReturnTheNumberOfPessoaInTheDatabase() {
+        Long count = pessoaService.count();
+
+        Assertions.assertEquals(totalPessoa, count);
+        Mockito.verify(pessoaRepository).count();
+    }
+
+    @Test
     public void findAllBySubstringShouldReturnAListOfPessoaDTOThatHaveTheSearchTerm() {
         List<PessoaDTO> list = pessoaService.findAllBySubstring(searchTerm);
 
-        Assertions.assertEquals(2, list.size());
+        Assertions.assertEquals(Factory.createPessoaList().size(), list.size());
         Mockito.verify(pessoaRepository).findAllBySubstring(searchTerm);
     }
 
