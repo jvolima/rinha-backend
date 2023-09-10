@@ -14,20 +14,27 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/pessoas")
+@RequestMapping(value = "")
 public class PessoaController {
 
     @Autowired
     private PessoaService pessoaService;
 
-   @GetMapping
+    @GetMapping(value = "/contagem-pessoas")
+    public ResponseEntity<Long> count() {
+        Long count = pessoaService.count();
+
+        return ResponseEntity.ok().body(count);
+    }
+
+   @GetMapping(value = "/pessoas")
     public ResponseEntity<List<PessoaDTO>> findAllBySubstring(@RequestParam String t) {
         List<PessoaDTO> list = pessoaService.findAllBySubstring(t);
 
         return ResponseEntity.ok().body(list);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/pessoas/{id}")
     public ResponseEntity<PessoaDTO> findById(@PathVariable String id) {
         try {
             UUID uuid = UUID.fromString(id);
@@ -39,7 +46,7 @@ public class PessoaController {
         }
     }
 
-    @PostMapping
+    @PostMapping(value = "/pessoas")
     public ResponseEntity<Void> insert(@Valid @RequestBody PessoaDTO dto) {
         dto = pessoaService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")

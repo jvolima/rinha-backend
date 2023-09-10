@@ -34,6 +34,7 @@ public class PessoaControllerTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private Long count;
     private String searchTerm;
     private UUID existingId;
     private UUID nonExistingId;
@@ -41,12 +42,15 @@ public class PessoaControllerTests {
 
     @BeforeEach
     public void setUp() {
+        count = 10L;
         searchTerm = "fulano";
         existingId = UUID.randomUUID();
         nonExistingId = UUID.randomUUID();
 
         dto = Factory.createPessoaDTO();
         dto.setId(UUID.randomUUID());
+
+        Mockito.when(service.count()).thenReturn(count);
 
         Mockito.when(service.findAllBySubstring(searchTerm)).thenReturn(Factory.createPessoaDTOList());
         Mockito.when(service.findAllBySubstring(null)).thenThrow(BadRequestException.class);
@@ -55,6 +59,16 @@ public class PessoaControllerTests {
         Mockito.when(service.findById(nonExistingId)).thenThrow(NotFoundException.class);
 
         Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenReturn(dto);
+    }
+
+    @Test
+    public void countShouldReturnOkAndTheNumberOfPessoaInTheDatabase() throws Exception {
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.get("/contagem-pessoas")
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$").value(count));
     }
 
     @Test
