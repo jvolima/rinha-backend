@@ -26,6 +26,10 @@ public class PessoaService {
 
     @Transactional(readOnly = true)
     public List<PessoaDTO> findAllBySubstring(String searchTerm) {
+        if (searchTerm == null) {
+            throw new BadRequestException("O termo de busca não pode estar vazio");
+        }
+
         List<Pessoa> list = pessoaRepository.findAllBySubstring(searchTerm);
 
         return list.stream().map(PessoaDTO::new).collect(Collectors.toList());
