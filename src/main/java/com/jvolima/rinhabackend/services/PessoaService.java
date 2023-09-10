@@ -25,6 +25,11 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     @Transactional(readOnly = true)
+    public Long count() {
+        return pessoaRepository.count();
+    }
+
+    @Transactional(readOnly = true)
     public List<PessoaDTO> findAllBySubstring(String searchTerm) {
         if (searchTerm == null) {
             throw new BadRequestException("O termo de busca não pode estar vazio");
