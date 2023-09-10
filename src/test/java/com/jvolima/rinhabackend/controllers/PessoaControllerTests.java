@@ -49,6 +49,7 @@ public class PessoaControllerTests {
         dto.setId(UUID.randomUUID());
 
         Mockito.when(service.findAllBySubstring(searchTerm)).thenReturn(Factory.createPessoaDTOList());
+        Mockito.when(service.findAllBySubstring(null)).thenThrow(BadRequestException.class);
 
         Mockito.when(service.findById(existingId)).thenReturn(dto);
         Mockito.when(service.findById(nonExistingId)).thenThrow(NotFoundException.class);
@@ -65,6 +66,15 @@ public class PessoaControllerTests {
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").exists());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[1].id").exists());
+    }
+
+    @Test
+    public void findAllBySubstringShouldReturnBadRequestWhenSearchTermIsNotPresent() throws Exception {
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.get("/pessoas")
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
