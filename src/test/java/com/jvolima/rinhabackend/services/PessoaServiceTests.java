@@ -62,6 +62,11 @@ public class PessoaServiceTests {
     }
 
     @Test
+    public void findAllShouldThrowBadRequestExceptionWhenSearchTermIsNull() {
+        Assertions.assertThrows(BadRequestException.class, () -> pessoaService.findAllBySubstring(null));
+    }
+
+    @Test
     public void findByIdShouldReturnPessoaDTOWhenIdExists() {
         PessoaDTO dto = pessoaService.findById(existingId);
 
