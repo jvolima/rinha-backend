@@ -34,22 +34,37 @@ public class PessoaControllerTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private String searchTerm;
     private UUID existingId;
     private UUID nonExistingId;
     private PessoaDTO dto;
 
     @BeforeEach
     public void setUp() {
+        searchTerm = "fulano";
         existingId = UUID.randomUUID();
         nonExistingId = UUID.randomUUID();
 
         dto = Factory.createPessoaDTO();
         dto.setId(UUID.randomUUID());
 
+        Mockito.when(service.findAllBySubstring(searchTerm)).thenReturn(Factory.createPessoaDTOList());
+
         Mockito.when(service.findById(existingId)).thenReturn(dto);
         Mockito.when(service.findById(nonExistingId)).thenThrow(NotFoundException.class);
 
         Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenReturn(dto);
+    }
+
+    @Test
+    public void findAllBySubstringShouldReturnOkAndAListOfPessoaDTOThatHaveTheSearchTerm() throws Exception {
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.get("/pessoas?t={searchTerm}", searchTerm)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[1].id").exists());
     }
 
     @Test

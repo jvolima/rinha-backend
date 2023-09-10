@@ -54,7 +54,7 @@ public class PessoaServiceTests {
     }
 
     @Test
-    public void findAllShouldReturnAListOfPessoaDTOThatHaveTheSearchTerm() {
+    public void findAllBySubstringShouldReturnAListOfPessoaDTOThatHaveTheSearchTerm() {
         List<PessoaDTO> list = pessoaService.findAllBySubstring(searchTerm);
 
         Assertions.assertEquals(2, list.size());
@@ -62,7 +62,7 @@ public class PessoaServiceTests {
     }
 
     @Test
-    public void findAllShouldThrowBadRequestExceptionWhenSearchTermIsNull() {
+    public void findAllBySubstringShouldThrowBadRequestExceptionWhenSearchTermIsNull() {
         Assertions.assertThrows(BadRequestException.class, () -> pessoaService.findAllBySubstring(null));
     }
 
