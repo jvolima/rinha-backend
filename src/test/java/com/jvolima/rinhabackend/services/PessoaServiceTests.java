@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,15 +31,19 @@ public class PessoaServiceTests {
     @Mock
     private PessoaRepository pessoaRepository;
 
+    private String searchTerm;
     private String apelido;
     private UUID existingId;
     private UUID nonExistingId;
 
     @BeforeEach
     public void setUp() {
+        searchTerm = "fula";
         apelido = "anyApelido";
         existingId = UUID.randomUUID();
         nonExistingId = UUID.randomUUID();
+
+        Mockito.when(pessoaRepository.findAllBySubstring(searchTerm)).thenReturn(Factory.createPessoaList());
 
         Mockito.when(pessoaRepository.findById(existingId)).thenReturn(Optional.of(Factory.createPessoa()));
         Mockito.when(pessoaRepository.findById(nonExistingId)).thenReturn(Optional.empty());
@@ -46,6 +51,14 @@ public class PessoaServiceTests {
         Mockito.when(pessoaRepository.findByApelido(apelido)).thenReturn(Factory.createPessoa());
 
         Mockito.when(pessoaRepository.save(ArgumentMatchers.any(Pessoa.class))).thenReturn(Factory.createPessoa());
+    }
+
+    @Test
+    public void findAllShouldReturnAListOfPessoaDTOThatHaveTheSearchTerm() {
+        List<PessoaDTO> pessoaDTOList = pessoaService.findAllBySubstring(searchTerm);
+
+        Assertions.assertEquals(2, pessoaDTOList.size());
+        Mockito.verify(pessoaRepository).findAllBySubstring(searchTerm);
     }
 
     @Test
