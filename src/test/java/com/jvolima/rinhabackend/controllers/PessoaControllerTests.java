@@ -38,6 +38,7 @@ public class PessoaControllerTests {
     private String searchTerm;
     private UUID existingId;
     private UUID nonExistingId;
+    private String invalidId;
     private PessoaDTO dto;
 
     @BeforeEach
@@ -46,6 +47,7 @@ public class PessoaControllerTests {
         searchTerm = "fulano";
         existingId = UUID.randomUUID();
         nonExistingId = UUID.randomUUID();
+        invalidId = "invalidId";
 
         dto = Factory.createPessoaDTO();
         dto.setId(UUID.randomUUID());
@@ -103,12 +105,19 @@ public class PessoaControllerTests {
 
     @Test
     public void findByIdShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
-        ResultActions result =
+        ResultActions result1 =
                 mockMvc.perform(MockMvcRequestBuilders.get("/pessoas/{id}", nonExistingId)
                         .accept(MediaType.APPLICATION_JSON));
 
-        result.andExpect(MockMvcResultMatchers.status().isNotFound());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
+        result1.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result1.andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
+
+        ResultActions result2 =
+                mockMvc.perform(MockMvcRequestBuilders.get("/pessoas/{id}", invalidId)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result2.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result2.andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
     }
 
     @Test
@@ -138,6 +147,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("apelido"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Campo obrigatório"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -155,6 +165,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("apelido"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 32 caracteres"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -172,6 +183,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("nome"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Campo obrigatório"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -189,6 +201,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("nome"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 100 caracteres"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -206,6 +219,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("nascimento"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Campo obrigatório"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -223,6 +237,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("nascimento"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Formato desejado: AAAA-MM-DD (ano, mês, dia)"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -241,6 +256,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("stack[]"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Campo obrigatório"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -258,6 +274,7 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("stack[]"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 32 caracteres"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
