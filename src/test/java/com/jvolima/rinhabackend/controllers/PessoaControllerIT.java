@@ -1,35 +1,32 @@
 package com.jvolima.rinhabackend.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jvolima.rinhabackend.config.IntegrationTestsSeed;
 import com.jvolima.rinhabackend.dto.PessoaDTO;
-import com.jvolima.rinhabackend.services.PessoaService;
-import com.jvolima.rinhabackend.services.exceptions.BadRequestException;
-import com.jvolima.rinhabackend.services.exceptions.NotFoundException;
-import com.jvolima.rinhabackend.services.exceptions.UnprocessableEntityException;
 import com.jvolima.rinhabackend.tests.Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@WebMvcTest(PessoaController.class)
-public class PessoaControllerTests {
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+@ActiveProfiles(profiles = "test")
+public class PessoaControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private PessoaService service;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -42,29 +39,17 @@ public class PessoaControllerTests {
     private PessoaDTO dto;
 
     @BeforeEach
-    public void setUp() {
-        count = 10L;
-        searchTerm = "fulano";
-        existingId = UUID.randomUUID();
+    void setUp() throws Exception {
+        count = 2L;
+        searchTerm = "Spring";
+        existingId = IntegrationTestsSeed.pessoaId;
         nonExistingId = UUID.randomUUID();
         invalidId = "invalidId";
-
         dto = Factory.createPessoaDTO();
-        dto.setId(UUID.randomUUID());
-
-        Mockito.when(service.count()).thenReturn(count);
-
-        Mockito.when(service.findAllBySubstring(searchTerm)).thenReturn(Factory.createPessoaDTOList());
-        Mockito.when(service.findAllBySubstring(null)).thenThrow(BadRequestException.class);
-
-        Mockito.when(service.findById(existingId)).thenReturn(dto);
-        Mockito.when(service.findById(nonExistingId)).thenThrow(NotFoundException.class);
-
-        Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenReturn(dto);
     }
 
     @Test
-    public void countShouldReturnOkAndTheNumberOfPessoaInTheDatabase() throws Exception {
+    public void countShouldReturnTotalPessoaInDatabase() throws Exception {
         ResultActions result =
                 mockMvc.perform(MockMvcRequestBuilders.get("/contagem-pessoas")
                         .accept(MediaType.APPLICATION_JSON));
@@ -74,18 +59,18 @@ public class PessoaControllerTests {
     }
 
     @Test
-    public void findAllBySubstringShouldReturnOkAndAListOfPessoaDTOThatHaveTheSearchTerm() throws Exception {
+    public void findAllBySubstringShouldReturnAListOfPessoaDTOThatHaveTheSearchTerm() throws Exception {
         ResultActions result =
                 mockMvc.perform(MockMvcRequestBuilders.get("/pessoas?t={searchTerm}", searchTerm)
                         .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.[1].id").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].apelido").value("alice"));
     }
 
     @Test
-    public void findAllBySubstringShouldReturnBadRequestWhenSearchTermIsNotPresent() throws Exception {
+    public void findAllBySubstringShouldReturnBadRequestWhenSearchTermIsNotPresentInURL() throws Exception {
         ResultActions result =
                 mockMvc.perform(MockMvcRequestBuilders.get("/pessoas")
                         .accept(MediaType.APPLICATION_JSON));
@@ -101,6 +86,7 @@ public class PessoaControllerTests {
 
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.apelido").value("johndoe"));
     }
 
     @Test
@@ -130,13 +116,11 @@ public class PessoaControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
 
-        result.andExpect(MockMvcResultMatchers.header().string("Location", "http://localhost/pessoas/" + dto.getId()));
         result.andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenApelidoIsNull() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.setApelido(null);
 
         String jsonBody = objectMapper.writeValueAsString(dto);
@@ -154,7 +138,6 @@ public class PessoaControllerTests {
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenApelidoHasMoreThan32Characters() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.setApelido("MeuApelidoÉMuitoMuitoMuitoMuitoGrande");
 
         String jsonBody = objectMapper.writeValueAsString(dto);
@@ -172,7 +155,6 @@ public class PessoaControllerTests {
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenNomeIsNull() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.setNome(null);
 
         String jsonBody = objectMapper.writeValueAsString(dto);
@@ -190,7 +172,6 @@ public class PessoaControllerTests {
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenNomeHasMoreThan100Characters() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.setNome("MeuNomeÉMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoMuitoGrande");
 
         String jsonBody = objectMapper.writeValueAsString(dto);
@@ -208,7 +189,6 @@ public class PessoaControllerTests {
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenNascimentoIsNull() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.setNascimento(null);
 
         String jsonBody = objectMapper.writeValueAsString(dto);
@@ -226,7 +206,6 @@ public class PessoaControllerTests {
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenNascimentoIsOutOfDesiredFormat() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.setNascimento("10/11/2002");
 
         String jsonBody = objectMapper.writeValueAsString(dto);
@@ -243,8 +222,23 @@ public class PessoaControllerTests {
     }
 
     @Test
+    public void insertShouldReturnUnprocessableEntityWhenNascimentoIsInvalidDate() throws Exception {
+        dto.setNascimento("2030-15-32");
+
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions result =
+                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Data de nascimento inválida"));
+        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+    }
+
+    @Test
     public void insertShouldReturnUnprocessableEntityWhenSomeStackIsNull() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.getStack().clear();
         dto.getStack().add(null);
 
@@ -263,7 +257,6 @@ public class PessoaControllerTests {
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenSomeStackHasMoreThan32Characters() throws Exception {
-        PessoaDTO dto = Factory.createPessoaDTO();
         dto.getStack().add("MinhaStackÉTãoBoaQueTemEsseNomeGrande");
 
         String jsonBody = objectMapper.writeValueAsString(dto);
@@ -277,39 +270,5 @@ public class PessoaControllerTests {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].fieldName").value("stack[]"));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message").value("Máximo de 32 caracteres"));
         result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
-    }
-
-    @Test
-    public void insertShouldReturnUnprocessableEntityWhenServiceThrowUnprocessableEntityException() throws Exception {
-        PessoaDTO unprocessableDTO = Factory.createPessoaDTO();
-
-        String jsonBody = objectMapper.writeValueAsString(unprocessableDTO);
-
-        Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenThrow(UnprocessableEntityException.class);
-
-        ResultActions result =
-                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
-                        .content(jsonBody)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON));
-
-        result.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
-    }
-
-    @Test
-    public void insertShouldReturnBadRequestWhenServiceThrowBadRequestException() throws Exception {
-        PessoaDTO badDTO = Factory.createPessoaDTO();
-
-        String jsonBody = objectMapper.writeValueAsString(badDTO);
-
-        Mockito.when(service.insert(ArgumentMatchers.any(PessoaDTO.class))).thenThrow(BadRequestException.class);
-
-        ResultActions result =
-                mockMvc.perform(MockMvcRequestBuilders.post("/pessoas")
-                        .content(jsonBody)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON));
-
-        result.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }

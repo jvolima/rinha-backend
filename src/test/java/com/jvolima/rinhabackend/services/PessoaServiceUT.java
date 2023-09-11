@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
-public class PessoaServiceTests {
+public class PessoaServiceUT {
 
     @InjectMocks
     private PessoaService pessoaService;
