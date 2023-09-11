@@ -1,4 +1,5 @@
-# Rinha backend
+# Rinha de backend
+[Link da rinha no github](https://github.com/zanfranceschi/rinha-de-backend-2023-q3)
 
 ## Princípios
 - Single Responsibility Principle (SRP)
@@ -17,15 +18,32 @@
 - PostgreSQL
 - JPA e Hibernate
 - JUnit
+- Git
 
 ## Metodologias e designs
 - MVC
 - TDD
 - Conventional commits
 
+## Features de testes
+- Testes unitários
+- Testes de integração
+- Cobertura de testes
+- Mocks
+- Factories
+
+## Features do Git
+- Alias
+- Amend
+- Add
+- Commit
+- Push
+- Status
+- Log
+
 ## ToDo list
 - [x] Unit tests
-- [] Integration tests
+- [x] Integration tests
 - [] Docker
 - [] Improve performance
 - [] Swagger
