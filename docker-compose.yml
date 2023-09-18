@@ -1,0 +1,51 @@
+version: '3.5'
+
+services:
+  rinha-api-1:
+    image: 'rinha-api-1'
+    build:
+      context: .
+    container_name: rinha-api-1
+    depends_on:
+      - rinha-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://rinha-db:5432/db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    expose:
+      - "8080"
+
+  rinha-api-2:
+    image: 'rinha-api-2'
+    build:
+      context: .
+    container_name: rinha-api-2
+    depends_on:
+      - rinha-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://rinha-db:5432/db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    expose:
+      - "8080"
+
+  nginx:
+    image: nginx:latest
+    container_name: rinha-nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - rinha-api-1
+      - rinha-api-2
+    ports:
+      - "9999:9999"
+
+  rinha-db:
+    image: 'postgres:13.1-alpine'
+    container_name: rinha-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db
