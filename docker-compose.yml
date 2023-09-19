@@ -15,6 +15,11 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     expose:
       - "8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.35'
+          memory: '512MB'
 
   rinha-api-2:
     image: 'rinha-api-2'
@@ -30,6 +35,11 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     expose:
       - "8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.35'
+          memory: '512MB'
 
   nginx:
     image: nginx:latest
@@ -41,11 +51,21 @@ services:
       - rinha-api-2
     ports:
       - "9999:9999"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.9'
+          memory: '0.5GB'
 
   rinha-db:
-    image: 'postgres:13.1-alpine'
+    image: 'postgres:latest'
     container_name: rinha-db
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.9'
+          memory: '1.5GB'
