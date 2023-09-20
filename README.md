@@ -40,12 +40,14 @@
 - Push
 - Status
 - Log
+- Hooks
 
 ## ToDo list
 - [x] Unit tests
 - [x] Integration tests
 - [x] Docker
-- [x] Pre-push script Git
+- [] Pre-push script Git
+- [] Deploy
 - [] CI/CD
 - [] Improve performance
 - [] Swagger
