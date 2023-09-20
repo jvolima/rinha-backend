@@ -44,6 +44,8 @@
 ## ToDo list
 - [x] Unit tests
 - [x] Integration tests
-- [] Docker
+- [x] Docker
+- [x] Pre-push script Git
+- [] CI/CD
 - [] Improve performance
 - [] Swagger
